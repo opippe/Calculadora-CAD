@@ -89,13 +89,21 @@ export default function App() {
 
   const [results, setResults] = useState<ResultsState | null>(null);
   const [severity, setSeverity] = useState<Severity | null>(null);
+  const [decimalWarning, setDecimalWarning] = useState(false);
 
   // Manipulação de inputs
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    let newValue = value;
+    if (newValue.includes(',')) {
+      setDecimalWarning(true);
+      newValue = newValue.replace(/,/g, '.');
+    } else {
+      setDecimalWarning(false);
+    }
     setInputs(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : newValue
     }));
   };
 
@@ -200,6 +208,16 @@ export default function App() {
             Todas as decisões devem ser confirmadas clinicamente. O julgamento médico prevalece.
           </div>
         </div>
+
+        {/* Aviso sobre decimais */}
+        {decimalWarning && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r shadow-sm flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+            <div className="text-sm text-yellow-800">
+              <strong>Dica:</strong> Use ponto (.) para separar casas decimais, não vírgula (,). O valor foi automaticamente corrigido.
+            </div>
+          </div>
+        )}
 
         {/* Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
